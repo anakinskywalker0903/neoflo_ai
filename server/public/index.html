@@ -1,159 +1,173 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>VisionPulse AI - Personal Productivity Timeline</title>
-  <link rel="stylesheet" href="styles.css">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Personal Productivity Timeline — VisionPulse AI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <div class="app-layout">
-    <!-- Sidebar Navigation -->
-    <aside class="sidebar">
-      <div class="brand">
-        <span class="brand-icon">👁️</span>
-        <div class="brand-text">
-          <h2>VisionPulse <span class="badge-ai">AI</span></h2>
-          <p>Productivity Timeline</p>
-        </div>
-      </div>
 
-      <nav class="nav-menu">
-        <a href="#timeline" class="nav-item active" id="navTimeline">
-          <span class="nav-icon">⏱️</span> Timeline Stream
-        </a>
-        <a href="#summary" class="nav-item" id="navSummary">
-          <span class="nav-icon">🤖</span> AI Work Summary
-        </a>
-        <a href="#analytics" class="nav-item" id="navAnalytics">
-          <span class="nav-icon">📊</span> Category Analytics
-        </a>
-        <a href="#privacy" class="nav-item" id="navPrivacy">
-          <span class="nav-icon">🛡️</span> Privacy & Logs
-        </a>
-      </nav>
-
-      <div class="sidebar-footer">
-        <div class="system-status">
-          <span class="status-dot green"></span>
-          <span>Agent Online (Port 5000)</span>
-        </div>
-      </div>
-    </aside>
-
-    <!-- Main Content Area -->
-    <main class="main-content">
-      <!-- Top Header -->
-      <header class="top-header">
-        <div class="header-title">
-          <h1>Personal Productivity Timeline</h1>
-          <p>Real-time visual monitoring feed & AI-extracted activity analytics</p>
-        </div>
-
-        <div class="header-actions">
-          <button class="btn btn-secondary" id="refreshBtn">
-            <span>🔄</span> Refresh Feed
-          </button>
-          <button class="btn btn-danger-outline" id="clearBtn">
-            <span>🗑️</span> Clear Logs
-          </button>
-        </div>
-      </header>
-
-      <!-- Metric Cards Grid -->
-      <section class="metrics-grid">
-        <div class="metric-card main-score">
-          <div class="metric-header">
-            <span>PRODUCTIVITY SCORE</span>
-            <span class="pulse-icon">⚡</span>
-          </div>
-          <div class="score-display">
-            <h2 id="productivityScore">85<span class="score-unit">/100</span></h2>
-            <span class="score-tag positive" id="scoreTag">High Focus</span>
-          </div>
-          <div class="progress-bar-bg">
-            <div class="progress-bar-fill" id="scoreBar" style="width: 85%;"></div>
-          </div>
-        </div>
-
-        <div class="metric-card">
-          <div class="metric-header">
-            <span>TOTAL ACTIVITIES</span>
-            <span>📍</span>
-          </div>
-          <div class="metric-value" id="totalActivitiesCount">0</div>
-          <span class="metric-sub">Captured events today</span>
-        </div>
-
-        <div class="metric-card">
-          <div class="metric-header">
-            <span>TOP FOCUS AREA</span>
-            <span>💻</span>
-          </div>
-          <div class="metric-value" id="topCategory">Coding</div>
-          <span class="metric-sub" id="topCategorySub">5 activity logs</span>
-        </div>
-
-        <div class="metric-card">
-          <div class="metric-header">
-            <span>TOP WEBSITE</span>
-            <span>🌐</span>
-          </div>
-          <div class="metric-value" id="topWebsite">github.com</div>
-          <span class="metric-sub">Active session</span>
-        </div>
-      </section>
-
-      <!-- AI Daily Work Summary Banner -->
-      <section class="ai-summary-card" id="aiSummarySection">
-        <div class="summary-header">
-          <div class="summary-title">
-            <span class="ai-sparkle">✨</span>
-            <h3>"What Did I Work On Today?" — AI Executive Summary</h3>
-          </div>
-          <button class="btn btn-sm btn-ghost" id="regenerateSummaryBtn">
-            <span>🤖</span> Regenerate AI Insight
-          </button>
-        </div>
-        <div class="summary-body" id="aiSummaryContent">
-          <div class="skeleton-loader">Analyzing activity patterns with Gemini Vision LLM...</div>
-        </div>
-      </section>
-
-      <!-- Controls & Filter Toolbar -->
-      <section class="toolbar">
-        <div class="search-box">
-          <span class="search-icon">🔍</span>
-          <input type="text" id="searchInput" placeholder="Search activity, website, or summary...">
-        </div>
-
-        <div class="category-filters" id="categoryFilterContainer">
-          <button class="filter-chip active" data-category="ALL">All Events</button>
-          <button class="filter-chip" data-category="Coding">💻 Coding</button>
-          <button class="filter-chip" data-category="Learning">🧠 Learning</button>
-          <button class="filter-chip" data-category="Meetings">📹 Meetings</button>
-          <button class="filter-chip" data-category="Distractions">🎮 Distractions</button>
-          <button class="filter-chip" data-category="Utility">🛠️ Utility</button>
-        </div>
-      </section>
-
-      <!-- Activity Timeline Stream -->
-      <section class="timeline-container">
-        <div class="timeline-header">
-          <h3>CHRONOLOGICAL ACTIVITY STREAM</h3>
-          <span id="showingCount">Showing 0 activities</span>
-        </div>
-
-        <div class="timeline-feed" id="timelineFeed">
-          <!-- Timeline items dynamically inserted here -->
-        </div>
-      </section>
-    </main>
+<!-- ============ FIXED SIDEBAR ============ -->
+<aside class="sidebar">
+  <div class="brand">
+    <div class="brand-badge">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M12 2L14.5 9.5L22 12L14.5 14.5L12 22L9.5 14.5L2 12L9.5 9.5L12 2Z" fill="white"/></svg>
+    </div>
+    <div class="brand-text">
+      <div class="name">VisionPulse AI</div>
+      <div class="tag">Monitoring Live</div>
+    </div>
   </div>
 
-  <script src="app.js"></script>
+  <nav class="nav">
+    <div class="nav-label">Workspace</div>
+    <a href="#timeline" class="nav-link active" id="navTimeline"><span class="ico">◈</span> Timeline Stream <span class="count" id="navCount">0</span></a>
+    <a href="#summary" class="nav-link" id="navSummary"><span class="ico">▤</span> AI Work Summary</a>
+    <a href="#analytics" class="nav-link" id="navAnalytics"><span class="ico">◐</span> Category Analytics</a>
+    <a href="#privacy" class="nav-link" id="navPrivacy"><span class="ico">◫</span> Privacy &amp; Logs</a>
+  </nav>
+
+  <div class="sidebar-status">
+    <div class="status-dot"></div>
+    <div>
+      <div class="status-txt">Agent Online</div>
+      <div class="status-sub">localhost : 5000</div>
+    </div>
+  </div>
+</aside>
+
+<!-- ============ MAIN CONTENT ============ -->
+<main class="main">
+
+  <header class="header">
+    <div>
+      <h1>Personal Productivity Timeline</h1>
+      <div class="sub">Reconstructed from screen activity by your monitoring agent · <span class="mono" id="todayDate">Today</span></div>
+    </div>
+    <div class="header-actions">
+      <button class="btn btn-ghost" id="refreshBtn">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 12a9 9 0 1 1-3-6.7M21 4v5h-5"/></svg>
+        Refresh Feed
+      </button>
+      <button class="btn btn-primary" id="clearBtn">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M3 6h18M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2m2 0v14a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V6h12Z"/></svg>
+        Clear Logs
+      </button>
+    </div>
+  </header>
+
+  <!-- ===== METRIC CARDS ===== -->
+  <section class="metrics">
+
+    <!-- Productivity Gauge Card -->
+    <div class="card emerald">
+      <div class="card-label">Productivity Score</div>
+      <div class="gauge-row">
+        <div class="gauge-ring">
+          <svg width="64" height="64" viewBox="0 0 64 64">
+            <defs>
+              <linearGradient id="gaugeGrad" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stop-color="#10b981"/>
+                <stop offset="100%" stop-color="#06b6d4"/>
+              </linearGradient>
+            </defs>
+            <circle class="bg" cx="32" cy="32" r="28"/>
+            <circle class="fg" id="gaugeCircle" cx="32" cy="32" r="28"/>
+          </svg>
+          <div class="gauge-num" id="productivityScore">78</div>
+        </div>
+        <div class="gauge-meta">
+          <div class="big" id="scoreTag">Strong focus day</div>
+          <div class="small" id="scoreSub">Active Session</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Total Activities Card -->
+    <div class="card violet">
+      <div class="metric-icon-row">
+        <div class="card-label">Total Activities</div>
+        <div class="card-icon" style="background:#8b5cf61c; color:#c4b0ff;">◈</div>
+      </div>
+      <div class="metric-value" id="totalActivitiesCount">0</div>
+      <div class="metric-delta up" id="activityDelta">↑ Captured events today</div>
+    </div>
+
+    <!-- Top Focus Area Card -->
+    <div class="card cyan">
+      <div class="metric-icon-row">
+        <div class="card-label">Top Focus Area</div>
+        <div class="card-icon" style="background:#06b6d41c; color:#7fe3f5;">💻</div>
+      </div>
+      <div class="metric-value big-text" id="topCategory">Coding</div>
+      <div class="metric-delta" id="topCategorySub">Logged activities</div>
+    </div>
+
+    <!-- Top Website Card -->
+    <div class="card amber">
+      <div class="metric-icon-row">
+        <div class="card-label">Top Website</div>
+        <div class="card-icon" style="background:#f59e0b1c; color:#ffcf82;">◉</div>
+      </div>
+      <div class="metric-value big-text" id="topWebsite">github.com</div>
+      <div class="metric-delta" id="topWebsiteSub">Active sessions</div>
+    </div>
+
+  </section>
+
+  <!-- ===== AI EXECUTIVE SUMMARY ===== -->
+  <section class="ai-summary" id="aiSummarySection">
+    <div class="ai-summary-inner">
+      <div class="ai-head">
+        <div class="ai-orb">✦</div>
+        <div style="flex:1;">
+          <h2>What Did I Work On Today?</h2>
+          <div class="ai-sub">GENERATED BY AGENT · VISION LLM</div>
+        </div>
+        <button class="btn btn-ghost" id="regenerateSummaryBtn" style="padding:6px 12px; font-size:12px;">
+          <span>🤖</span> Refresh AI
+        </button>
+      </div>
+      <div id="aiSummaryContent">
+        <ul class="ai-bullets">
+          <li><span class="bnum">01</span><span>Analyzing browser screen activity patterns with Vision AI...</span></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== TOOLBAR & FILTERS ===== -->
+  <section class="toolbar">
+    <div class="search-box">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+      <input type="text" id="searchInput" placeholder="Search domains, apps, or activity descriptions…">
+    </div>
+    <div class="chips" id="chipRow">
+      <div class="chip active" data-cat="all">All Events</div>
+      <div class="chip" data-cat="coding">Coding 💻</div>
+      <div class="chip" data-cat="learning">Learning 🧠</div>
+      <div class="chip" data-cat="meetings">Meetings 📹</div>
+      <div class="chip" data-cat="distractions">Distractions 🎮</div>
+      <div class="chip" data-cat="utility">Utility 🛠️</div>
+    </div>
+  </section>
+
+  <!-- ===== CHRONOLOGICAL TIMELINE FEED ===== -->
+  <section class="feed-card">
+    <div class="feed-title">
+      <h3><span class="liveping"></span> Chronological Activity Feed</h3>
+      <span class="feed-count" id="feedCount">Showing 0 events</span>
+    </div>
+    <div class="timeline" id="timeline"></div>
+    <div class="empty-state" id="emptyState">No activity matches your filters. Try clearing the search or selecting “All Events.”</div>
+  </section>
+
+</main>
+
+<script src="app.js"></script>
 </body>
 </html>

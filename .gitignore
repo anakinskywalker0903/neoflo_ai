@@ -6,3 +6,5 @@ build/
 *.sqlite
 *.log
 .DS_Store
+server/data/
+scratch/

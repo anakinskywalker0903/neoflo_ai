@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>VisionPulse AI Settings & Privacy</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #0f172a;
+      color: #f8fafc;
+      padding: 40px;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+    h1 { font-size: 24px; margin-bottom: 8px; color: #6366f1; }
+    p { font-size: 14px; color: #94a3b8; margin-bottom: 24px; }
+    .card {
+      background: #1e293b;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+    .form-group {
+      margin-bottom: 16px;
+    }
+    label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+    input[type="text"], textarea {
+      width: 100%;
+      background: #0f172a;
+      border: 1px solid #334155;
+      color: #f8fafc;
+      padding: 10px;
+      border-radius: 6px;
+      font-size: 13px;
+      box-sizing: border-box;
+    }
+    .btn {
+      background: #6366f1;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 6px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .btn:hover { background: #4f46e5; }
+    .status { margin-top: 10px; font-size: 13px; color: #10b981; }
+  </style>
+</head>
+<body>
+  <h1>👁️ VisionPulse AI Settings</h1>
+  <p>Configure backend API endpoints, Gemini Vision API keys, and privacy domain blacklists.</p>
+
+  <div class="card">
+    <div class="form-group">
+      <label for="backendUrl">Backend Server Endpoint URL</label>
+      <input type="text" id="backendUrl" value="http://localhost:5000">
+    </div>
+
+    <div class="form-group">
+      <label for="blacklistedDomains">Blacklisted Privacy Domains (Comma-separated)</label>
+      <textarea id="blacklistedDomains" rows="3">bank, paypal, 1password, bitwarden, auth, login, checkout</textarea>
+    </div>
+
+    <button class="btn" id="saveBtn">Save Settings</button>
+    <div class="status" id="statusMessage"></div>
+  </div>
+
+  <script src="options.js"></script>
+</body>
+</html>

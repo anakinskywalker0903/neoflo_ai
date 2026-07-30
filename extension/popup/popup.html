@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VisionPulse AI Agent</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="container">
+    <!-- Header -->
+    <header class="header">
+      <div class="logo">
+        <span class="icon">👁️</span>
+        <div>
+          <h1>VisionPulse <span class="badge-ai">AI</span></h1>
+          <p class="subtitle">Visual Agent & Productivity Monitor</p>
+        </div>
+      </div>
+      <div class="status-indicator" id="statusPill">
+        <span class="dot"></span>
+        <span id="statusText">Active</span>
+      </div>
+    </header>
+
+    <!-- Main Control Toggle -->
+    <div class="card toggle-card">
+      <div class="toggle-info">
+        <h3>Screen Monitoring</h3>
+        <p>Captures active tab screenshot & logs AI insights</p>
+      </div>
+      <label class="switch">
+        <input type="checkbox" id="trackingToggle" checked>
+        <span class="slider round"></span>
+      </label>
+    </div>
+
+    <!-- Live Activity Card -->
+    <div class="card activity-card">
+      <div class="card-header">
+        <span class="label">LAST CAPTURED ACTIVITY</span>
+        <span class="time" id="lastTime">Just now</span>
+      </div>
+      <div class="activity-content" id="activityContent">
+        <div class="activity-main">
+          <span class="category-tag category-coding" id="categoryTag">Coding</span>
+          <h4 id="websiteDomain">github.com</h4>
+        </div>
+        <p class="activity-title" id="activityTitle">Editing React component</p>
+        <p class="activity-summary" id="activitySummary">Analyzing source code and reviewing pull requests.</p>
+        <div class="activity-footer">
+          <span>Confidence: <strong id="confidenceScore">98%</strong></span>
+          <span>Score: <strong id="productivityScore">+1 Productive</strong></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Capture Settings & Controls -->
+    <div class="card settings-card">
+      <div class="setting-row">
+        <label for="intervalSelect">Capture Frequency</label>
+        <select id="intervalSelect">
+          <option value="15">Every 15 Seconds</option>
+          <option value="30" selected>Every 30 Seconds</option>
+          <option value="60">Every 1 Minute</option>
+          <option value="120">Every 2 Minutes</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Actions -->
+    <div class="actions-row">
+      <button class="btn btn-primary" id="captureBtn">
+        <span>📸</span> Capture & Analyze Now
+      </button>
+      <button class="btn btn-secondary" id="dashboardBtn">
+        <span>📊</span> Open Dashboard
+      </button>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <span>Privacy Protected • Local Encryption</span>
+      <a href="#" id="optionsLink">Settings</a>
+    </footer>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

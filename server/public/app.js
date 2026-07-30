@@ -20,6 +20,12 @@ document.addEventListener('DOMContentLoaded', () => {
     other: 'Other 📌'
   };
 
+  // Nav Elements
+  const navLinks = document.querySelectorAll('.nav-link');
+  const tabViews = document.querySelectorAll('.tab-view');
+  const pageTitle = document.getElementById('pageTitle');
+
+  // Timeline View Elements
   const timeline = document.getElementById('timeline');
   const feedCount = document.getElementById('feedCount');
   const emptyState = document.getElementById('emptyState');
@@ -27,10 +33,13 @@ document.addEventListener('DOMContentLoaded', () => {
   const chipRow = document.getElementById('chipRow');
   const refreshBtn = document.getElementById('refreshBtn');
   const clearBtn = document.getElementById('clearBtn');
+  const privacyWipeBtn = document.getElementById('privacyWipeBtn');
   const regenerateSummaryBtn = document.getElementById('regenerateSummaryBtn');
+  const fullSummaryRegenBtn = document.getElementById('fullSummaryRegenBtn');
   const todayDate = document.getElementById('todayDate');
   const navCount = document.getElementById('navCount');
 
+  // Metric Elements
   const productivityScore = document.getElementById('productivityScore');
   const gaugeCircle = document.getElementById('gaugeCircle');
   const scoreTag = document.getElementById('scoreTag');
@@ -40,10 +49,41 @@ document.addEventListener('DOMContentLoaded', () => {
   const topCategorySub = document.getElementById('topCategorySub');
   const topWebsite = document.getElementById('topWebsite');
   const aiSummaryContent = document.getElementById('aiSummaryContent');
+  const fullSummaryOverview = document.getElementById('fullSummaryOverview');
+
+  // Analytics Elements
+  const analyticsCodingCount = document.getElementById('analyticsCodingCount');
+  const analyticsLearningCount = document.getElementById('analyticsLearningCount');
+  const analyticsDistractionsCount = document.getElementById('analyticsDistractionsCount');
+  const analyticsUtilityCount = document.getElementById('analyticsUtilityCount');
+  const analyticsDomainsTable = document.getElementById('analyticsDomainsTable');
+  const topDomainsCount = document.getElementById('topDomainsCount');
 
   if (todayDate) {
     todayDate.textContent = new Date().toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
   }
+
+  // Multi-Tab Navigation Handler
+  navLinks.forEach(link => {
+    link.addEventListener('click', (e) => {
+      e.preventDefault();
+      const targetId = link.getAttribute('data-target');
+      if (!targetId) return;
+
+      navLinks.forEach(l => l.classList.remove('active'));
+      tabViews.forEach(v => v.classList.remove('active'));
+
+      link.classList.add('active');
+      const targetView = document.getElementById(targetId);
+      if (targetView) targetView.classList.add('active');
+
+      // Update Page Title
+      if (targetId === 'viewTimeline') pageTitle.textContent = 'Personal Productivity Timeline';
+      if (targetId === 'viewSummary') pageTitle.textContent = 'AI Executive Work Summary';
+      if (targetId === 'viewAnalytics') pageTitle.textContent = 'Category Analytics & Time Distribution';
+      if (targetId === 'viewPrivacy') pageTitle.textContent = 'Privacy & Security Safeguards';
+    });
+  });
 
   // Initial Load
   loadDashboardData();
@@ -57,12 +97,11 @@ document.addEventListener('DOMContentLoaded', () => {
     }, 300);
   });
 
-  if (regenerateSummaryBtn) {
-    regenerateSummaryBtn.addEventListener('click', () => fetchAISummary());
-  }
+  if (regenerateSummaryBtn) regenerateSummaryBtn.addEventListener('click', () => fetchAISummary());
+  if (fullSummaryRegenBtn) fullSummaryRegenBtn.addEventListener('click', () => fetchAISummary());
 
-  clearBtn.addEventListener('click', async () => {
-    if (confirm('Clear all logged activity? This cannot be undone.')) {
+  const handleWipe = async () => {
+    if (confirm('Permanently clear all activity logs? This cannot be undone.')) {
       try {
         await fetch('/api/activities', { method: 'DELETE' });
         loadDashboardData();
@@ -70,21 +109,28 @@ document.addEventListener('DOMContentLoaded', () => {
         alert('Failed to clear logs: ' + err.message);
       }
     }
-  });
+  };
 
-  searchInput.addEventListener('input', (e) => {
-    searchQuery = e.target.value;
-    fetchActivities();
-  });
+  if (clearBtn) clearBtn.addEventListener('click', handleWipe);
+  if (privacyWipeBtn) privacyWipeBtn.addEventListener('click', handleWipe);
 
-  chipRow.addEventListener('click', (e) => {
-    const chip = e.target.closest('.chip');
-    if (!chip) return;
-    document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
-    chip.classList.add('active');
-    activeCat = chip.dataset.cat;
-    fetchActivities();
-  });
+  if (searchInput) {
+    searchInput.addEventListener('input', (e) => {
+      searchQuery = e.target.value;
+      fetchActivities();
+    });
+  }
+
+  if (chipRow) {
+    chipRow.addEventListener('click', (e) => {
+      const chip = e.target.closest('.chip');
+      if (!chip) return;
+      document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+      chip.classList.add('active');
+      activeCat = chip.dataset.cat;
+      fetchActivities();
+    });
+  }
 
   function loadDashboardData() {
     fetchStats();
@@ -100,45 +146,57 @@ document.addEventListener('DOMContentLoaded', () => {
       if (!data.success) return;
 
       const score = data.productivityScore || 75;
-      productivityScore.textContent = score;
+      if (productivityScore) productivityScore.textContent = score;
 
-      // Update SVG gauge ring stroke
-      const circumference = 176; // 2 * pi * 28
+      const circumference = 176;
       const offset = circumference - (circumference * score / 100);
       if (gaugeCircle) {
         gaugeCircle.style.strokeDasharray = `${circumference}`;
         gaugeCircle.style.strokeDashoffset = `${offset}`;
       }
 
-      if (score >= 80) {
-        scoreTag.textContent = 'Strong focus day';
-        scoreSub.textContent = 'High Productivity';
-      } else if (score >= 50) {
-        scoreTag.textContent = 'Moderate focus day';
-        scoreSub.textContent = 'Balanced Session';
-      } else {
-        scoreTag.textContent = 'High distraction day';
-        scoreSub.textContent = 'Needs Focus';
+      if (scoreTag) {
+        scoreTag.textContent = score >= 80 ? 'Strong focus day' : score >= 50 ? 'Moderate focus day' : 'High distraction day';
       }
 
-      totalActivitiesCount.textContent = data.totalActivities || 0;
+      if (totalActivitiesCount) totalActivitiesCount.textContent = data.totalActivities || 0;
       if (navCount) navCount.textContent = data.totalActivities || 0;
 
-      // Top category
-      if (data.categories && data.categories.length > 0) {
+      // Category breakdown for Analytics tab
+      let codingCount = 0, learningCount = 0, distractionCount = 0, utilityCount = 0;
+      if (data.categories) {
+        data.categories.forEach(c => {
+          if (c.category === 'Coding') codingCount = c.count;
+          if (c.category === 'Learning') learningCount = c.count;
+          if (c.category === 'Distractions') distractionCount = c.count;
+          if (c.category === 'Utility') utilityCount = c.count;
+        });
+
         const top = [...data.categories].sort((a, b) => b.count - a.count)[0];
-        topCategory.textContent = top.category;
-        topCategorySub.textContent = `${top.count} logged activities`;
-      } else {
-        topCategory.textContent = 'None';
-        topCategorySub.textContent = 'No logs';
+        if (topCategory) topCategory.textContent = top ? top.category : 'None';
+        if (topCategorySub) topCategorySub.textContent = top ? `${top.count} logged activities` : 'No logs';
       }
 
-      // Top website
-      if (data.topDomains && data.topDomains.length > 0) {
-        topWebsite.textContent = data.topDomains[0].domain;
-      } else {
-        topWebsite.textContent = 'None';
+      if (analyticsCodingCount) analyticsCodingCount.textContent = codingCount;
+      if (analyticsLearningCount) analyticsLearningCount.textContent = learningCount;
+      if (analyticsDistractionsCount) analyticsDistractionsCount.textContent = distractionCount;
+      if (analyticsUtilityCount) analyticsUtilityCount.textContent = utilityCount;
+
+      // Top Domains
+      if (data.topDomains) {
+        if (topWebsite) topWebsite.textContent = data.topDomains[0]?.domain || 'None';
+        if (topDomainsCount) topDomainsCount.textContent = `${data.topDomains.length} domains tracked`;
+
+        if (analyticsDomainsTable) {
+          analyticsDomainsTable.innerHTML = data.topDomains.map(d => `
+            <tr>
+              <td><strong>${escapeHtml(d.domain)}</strong></td>
+              <td><span class="t-cat ${(d.category || 'other').toLowerCase()}">${escapeHtml(d.category || 'Other')}</span></td>
+              <td>${d.count} events logged</td>
+              <td><strong style="color:var(--emerald);">+ Positive Focus</strong></td>
+            </tr>
+          `).join('');
+        }
       }
     } catch (err) {
       console.error('Error fetching stats:', err);
@@ -167,11 +225,14 @@ document.addEventListener('DOMContentLoaded', () => {
   // 3. Fetch AI Daily Summary
   async function fetchAISummary() {
     try {
-      aiSummaryContent.innerHTML = `
-        <ul class="ai-bullets">
-          <li><span class="bnum">✦</span><span>Generating AI Executive Summary with Gemini Vision LLM...</span></li>
-        </ul>
-      `;
+      if (aiSummaryContent) {
+        aiSummaryContent.innerHTML = `
+          <ul class="ai-bullets">
+            <li><span class="bnum">✦</span><span>Generating AI Executive Summary with Gemini Vision LLM...</span></li>
+          </ul>
+        `;
+      }
+
       const res = await fetch('/api/summary/daily');
       const data = await res.json();
 
@@ -182,24 +243,28 @@ document.addEventListener('DOMContentLoaded', () => {
           .map(l => l.replace(/^[-*\d.]+\s*/, '').trim());
 
         if (lines.length > 0) {
-          aiSummaryContent.innerHTML = `
-            <ul class="ai-bullets">
-              ${lines.map((line, idx) => `
-                <li>
-                  <span class="bnum">0${idx + 1}</span>
-                  <span>${formatBulletText(line)}</span>
-                </li>
-              `).join('')}
-            </ul>
-          `;
+          if (aiSummaryContent) {
+            aiSummaryContent.innerHTML = `
+              <ul class="ai-bullets">
+                ${lines.map((line, idx) => `
+                  <li>
+                    <span class="bnum">0${idx + 1}</span>
+                    <span>${formatBulletText(line)}</span>
+                  </li>
+                `).join('')}
+              </ul>
+            `;
+          }
+          if (fullSummaryOverview) {
+            fullSummaryOverview.innerHTML = lines.map(line => `<p style="margin-bottom:8px;">- ${formatBulletText(line)}</p>`).join('');
+          }
         } else {
-          aiSummaryContent.innerHTML = `<p style="font-size:13.5px; color:#cbd5e1; line-height:1.6;">${formatBulletText(data.summary)}</p>`;
+          if (aiSummaryContent) aiSummaryContent.innerHTML = `<p style="font-size:13.5px; color:#cbd5e1; line-height:1.6;">${formatBulletText(data.summary)}</p>`;
+          if (fullSummaryOverview) fullSummaryOverview.innerHTML = formatBulletText(data.summary);
         }
-      } else {
-        aiSummaryContent.innerHTML = '<p style="color:#a6adc4;">No AI summary available yet.</p>';
       }
     } catch (err) {
-      aiSummaryContent.innerHTML = `<p style="color:#f43f5e;">Error generating summary: ${err.message}</p>`;
+      if (aiSummaryContent) aiSummaryContent.innerHTML = `<p style="color:#f43f5e;">Error generating summary: ${err.message}</p>`;
     }
   }
 
@@ -214,44 +279,46 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function renderTimelineItems(activities) {
-    feedCount.textContent = `${activities.length} event${activities.length === 1 ? '' : 's'}`;
-    emptyState.classList.toggle('show', activities.length === 0);
+    if (feedCount) feedCount.textContent = `${activities.length} event${activities.length === 1 ? '' : 's'}`;
+    if (emptyState) emptyState.classList.toggle('show', activities.length === 0);
 
-    timeline.innerHTML = activities.map((act, i) => {
-      const catKey = (act.category || 'other').toLowerCase();
-      const color = NC[catKey] || '#64748b';
-      const label = CATLABEL[catKey] || act.category || 'Other';
-      const timeStr = new Date(act.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-      const confPct = Math.round((act.confidence || 0.9) * 100);
-      const cc = confColor(confPct);
-      const dash = 2 * Math.PI * 10;
-      const offset = dash - (dash * confPct / 100);
+    if (timeline) {
+      timeline.innerHTML = activities.map((act, i) => {
+        const catKey = (act.category || 'other').toLowerCase();
+        const color = NC[catKey] || '#64748b';
+        const label = CATLABEL[catKey] || act.category || 'Other';
+        const timeStr = new Date(act.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        const confPct = Math.round((act.confidence || 0.9) * 100);
+        const cc = confColor(confPct);
+        const dash = 2 * Math.PI * 10;
+        const offset = dash - (dash * confPct / 100);
 
-      return `
-        <div class="t-item" style="animation-delay: ${i * 0.04}s">
-          <div class="t-node-wrap">
-            <div class="t-node" style="--nc: ${color}"></div>
-          </div>
-          <div class="t-body">
-            <div class="t-top">
-              <span class="t-time">${timeStr}</span>
-              <span class="t-domain">${escapeHtml(act.domain || act.website)}</span>
-              <span class="t-cat ${catKey}">${label}</span>
+        return `
+          <div class="t-item" style="animation-delay: ${i * 0.04}s">
+            <div class="t-node-wrap">
+              <div class="t-node" style="--nc: ${color}"></div>
             </div>
-            <div class="t-desc"><b>${escapeHtml(act.activity)}</b> — ${escapeHtml(act.summary || '')}</div>
-            <div class="t-conf">
-              <div class="conf-ring">
-                <svg width="26" height="26" viewBox="0 0 26 26">
-                  <circle class="bg" cx="13" cy="13" r="10"/>
-                  <circle class="fg" cx="13" cy="13" r="10" stroke="${cc}" stroke-dasharray="${dash}" stroke-dashoffset="${offset}"/>
-                </svg>
+            <div class="t-body">
+              <div class="t-top">
+                <span class="t-time">${timeStr}</span>
+                <span class="t-domain">${escapeHtml(act.domain || act.website)}</span>
+                <span class="t-cat ${catKey}">${label}</span>
               </div>
-              <span class="conf-label">${confPct}% confidence</span>
+              <div class="t-desc"><b>${escapeHtml(act.activity)}</b> — ${escapeHtml(act.summary || '')}</div>
+              <div class="t-conf">
+                <div class="conf-ring">
+                  <svg width="26" height="26" viewBox="0 0 26 26">
+                    <circle class="bg" cx="13" cy="13" r="10"/>
+                    <circle class="fg" cx="13" cy="13" r="10" stroke="${cc}" stroke-dasharray="${dash}" stroke-dashoffset="${offset}"/>
+                  </svg>
+                </div>
+                <span class="conf-label">${confPct}% confidence</span>
+              </div>
             </div>
           </div>
-        </div>
-      `;
-    }).join('');
+        `;
+      }).join('');
+    }
   }
 
   function escapeHtml(str) {

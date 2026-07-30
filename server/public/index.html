@@ -25,10 +25,10 @@
 
   <nav class="nav">
     <div class="nav-label">Workspace</div>
-    <a href="#timeline" class="nav-link active" id="navTimeline"><span class="ico">◈</span> Timeline Stream <span class="count" id="navCount">0</span></a>
-    <a href="#summary" class="nav-link" id="navSummary"><span class="ico">▤</span> AI Work Summary</a>
-    <a href="#analytics" class="nav-link" id="navAnalytics"><span class="ico">◐</span> Category Analytics</a>
-    <a href="#privacy" class="nav-link" id="navPrivacy"><span class="ico">◫</span> Privacy &amp; Logs</a>
+    <a href="#timeline" class="nav-link active" data-target="viewTimeline"><span class="ico">◈</span> Timeline Stream <span class="count" id="navCount">0</span></a>
+    <a href="#summary" class="nav-link" data-target="viewSummary"><span class="ico">▤</span> AI Work Summary</a>
+    <a href="#analytics" class="nav-link" data-target="viewAnalytics"><span class="ico">◐</span> Category Analytics</a>
+    <a href="#privacy" class="nav-link" data-target="viewPrivacy"><span class="ico">◫</span> Privacy &amp; Logs</a>
   </nav>
 
   <div class="sidebar-status">
@@ -43,9 +43,10 @@
 <!-- ============ MAIN CONTENT ============ -->
 <main class="main">
 
+  <!-- TOP HEADER -->
   <header class="header">
     <div>
-      <h1>Personal Productivity Timeline</h1>
+      <h1 id="pageTitle">Personal Productivity Timeline</h1>
       <div class="sub">Reconstructed from screen activity by your monitoring agent · <span class="mono" id="todayDate">Today</span></div>
     </div>
     <div class="header-actions">
@@ -60,111 +61,259 @@
     </div>
   </header>
 
-  <!-- ===== METRIC CARDS ===== -->
-  <section class="metrics">
-
-    <!-- Productivity Gauge Card -->
-    <div class="card emerald">
-      <div class="card-label">Productivity Score</div>
-      <div class="gauge-row">
-        <div class="gauge-ring">
-          <svg width="64" height="64" viewBox="0 0 64 64">
-            <defs>
-              <linearGradient id="gaugeGrad" x1="0" y1="0" x2="1" y2="1">
-                <stop offset="0%" stop-color="#10b981"/>
-                <stop offset="100%" stop-color="#06b6d4"/>
-              </linearGradient>
-            </defs>
-            <circle class="bg" cx="32" cy="32" r="28"/>
-            <circle class="fg" id="gaugeCircle" cx="32" cy="32" r="28"/>
-          </svg>
-          <div class="gauge-num" id="productivityScore">78</div>
+  <!-- ================= TAB 1: TIMELINE STREAM VIEW ================= -->
+  <div id="viewTimeline" class="tab-view active">
+    <!-- ===== METRIC CARDS ===== -->
+    <section class="metrics">
+      <div class="card emerald">
+        <div class="card-label">Productivity Score</div>
+        <div class="gauge-row">
+          <div class="gauge-ring">
+            <svg width="64" height="64" viewBox="0 0 64 64">
+              <defs>
+                <linearGradient id="gaugeGrad" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0%" stop-color="#10b981"/>
+                  <stop offset="100%" stop-color="#06b6d4"/>
+                </linearGradient>
+              </defs>
+              <circle class="bg" cx="32" cy="32" r="28"/>
+              <circle class="fg" id="gaugeCircle" cx="32" cy="32" r="28"/>
+            </svg>
+            <div class="gauge-num" id="productivityScore">78</div>
+          </div>
+          <div class="gauge-meta">
+            <div class="big" id="scoreTag">Strong focus day</div>
+            <div class="small" id="scoreSub">Active Session</div>
+          </div>
         </div>
-        <div class="gauge-meta">
-          <div class="big" id="scoreTag">Strong focus day</div>
-          <div class="small" id="scoreSub">Active Session</div>
+      </div>
+
+      <div class="card violet">
+        <div class="metric-icon-row">
+          <div class="card-label">Total Activities</div>
+          <div class="card-icon" style="background:#8b5cf61c; color:#c4b0ff;">◈</div>
+        </div>
+        <div class="metric-value" id="totalActivitiesCount">0</div>
+        <div class="metric-delta up" id="activityDelta">↑ Captured events today</div>
+      </div>
+
+      <div class="card cyan">
+        <div class="metric-icon-row">
+          <div class="card-label">Top Focus Area</div>
+          <div class="card-icon" style="background:#06b6d41c; color:#7fe3f5;">💻</div>
+        </div>
+        <div class="metric-value big-text" id="topCategory">Coding</div>
+        <div class="metric-delta" id="topCategorySub">Logged activities</div>
+      </div>
+
+      <div class="card amber">
+        <div class="metric-icon-row">
+          <div class="card-label">Top Website</div>
+          <div class="card-icon" style="background:#f59e0b1c; color:#ffcf82;">◉</div>
+        </div>
+        <div class="metric-value big-text" id="topWebsite">github.com</div>
+        <div class="metric-delta" id="topWebsiteSub">Active sessions</div>
+      </div>
+    </section>
+
+    <!-- ===== AI EXECUTIVE SUMMARY PREVIEW ===== -->
+    <section class="ai-summary" id="aiSummarySection">
+      <div class="ai-summary-inner">
+        <div class="ai-head">
+          <div class="ai-orb">✦</div>
+          <div style="flex:1;">
+            <h2>What Did I Work On Today?</h2>
+            <div class="ai-sub">GENERATED BY AGENT · VISION LLM</div>
+          </div>
+          <button class="btn btn-ghost" id="regenerateSummaryBtn" style="padding:6px 12px; font-size:12px;">
+            <span>🤖</span> Refresh AI
+          </button>
+        </div>
+        <div id="aiSummaryContent">
+          <ul class="ai-bullets">
+            <li><span class="bnum">✦</span><span>Analyzing browser screen activity patterns with Vision AI...</span></li>
+          </ul>
         </div>
       </div>
-    </div>
+    </section>
 
-    <!-- Total Activities Card -->
-    <div class="card violet">
-      <div class="metric-icon-row">
-        <div class="card-label">Total Activities</div>
-        <div class="card-icon" style="background:#8b5cf61c; color:#c4b0ff;">◈</div>
+    <!-- ===== TOOLBAR & FILTERS ===== -->
+    <section class="toolbar">
+      <div class="search-box">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+        <input type="text" id="searchInput" placeholder="Search domains, apps, or activity descriptions…">
       </div>
-      <div class="metric-value" id="totalActivitiesCount">0</div>
-      <div class="metric-delta up" id="activityDelta">↑ Captured events today</div>
-    </div>
-
-    <!-- Top Focus Area Card -->
-    <div class="card cyan">
-      <div class="metric-icon-row">
-        <div class="card-label">Top Focus Area</div>
-        <div class="card-icon" style="background:#06b6d41c; color:#7fe3f5;">💻</div>
+      <div class="chips" id="chipRow">
+        <div class="chip active" data-cat="all">All Events</div>
+        <div class="chip" data-cat="coding">Coding 💻</div>
+        <div class="chip" data-cat="learning">Learning 🧠</div>
+        <div class="chip" data-cat="meetings">Meetings 📹</div>
+        <div class="chip" data-cat="distractions">Distractions 🎮</div>
+        <div class="chip" data-cat="utility">Utility 🛠️</div>
       </div>
-      <div class="metric-value big-text" id="topCategory">Coding</div>
-      <div class="metric-delta" id="topCategorySub">Logged activities</div>
-    </div>
+    </section>
 
-    <!-- Top Website Card -->
-    <div class="card amber">
-      <div class="metric-icon-row">
-        <div class="card-label">Top Website</div>
-        <div class="card-icon" style="background:#f59e0b1c; color:#ffcf82;">◉</div>
+    <!-- ===== TIMELINE FEED ===== -->
+    <section class="feed-card">
+      <div class="feed-title">
+        <h3><span class="liveping"></span> Chronological Activity Feed</h3>
+        <span class="feed-count" id="feedCount">Showing 0 events</span>
       </div>
-      <div class="metric-value big-text" id="topWebsite">github.com</div>
-      <div class="metric-delta" id="topWebsiteSub">Active sessions</div>
-    </div>
+      <div class="timeline" id="timeline"></div>
+      <div class="empty-state" id="emptyState">No activity matches your filters. Try clearing the search or selecting “All Events.”</div>
+    </section>
+  </div>
 
-  </section>
 
-  <!-- ===== AI EXECUTIVE SUMMARY ===== -->
-  <section class="ai-summary" id="aiSummarySection">
-    <div class="ai-summary-inner">
-      <div class="ai-head">
-        <div class="ai-orb">✦</div>
-        <div style="flex:1;">
-          <h2>What Did I Work On Today?</h2>
-          <div class="ai-sub">GENERATED BY AGENT · VISION LLM</div>
+  <!-- ================= TAB 2: AI WORK SUMMARY VIEW ================= -->
+  <div id="viewSummary" class="tab-view hidden">
+    <section class="ai-summary" style="margin-bottom: 24px;">
+      <div class="ai-summary-inner" style="padding: 32px;">
+        <div class="ai-head" style="margin-bottom: 20px;">
+          <div class="ai-orb" style="width:48px; height:48px; font-size:22px;">🤖</div>
+          <div style="flex:1;">
+            <h2 style="font-size:22px;">Daily Executive AI Narrative Report</h2>
+            <div class="ai-sub">GENERATED BY GOOGLE GEMINI VISION LLM · HIGH ACCURACY</div>
+          </div>
+          <button class="btn btn-primary" id="fullSummaryRegenBtn">
+            <span>✨</span> Generate Fresh AI Insights
+          </button>
         </div>
-        <button class="btn btn-ghost" id="regenerateSummaryBtn" style="padding:6px 12px; font-size:12px;">
-          <span>🤖</span> Refresh AI
-        </button>
+
+        <div id="fullSummaryBody" class="full-summary-container">
+          <div class="summary-card-block">
+            <h3>🚀 Executive Overview</h3>
+            <p id="fullSummaryOverview">Loading comprehensive daily session synthesis...</p>
+          </div>
+        </div>
       </div>
-      <div id="aiSummaryContent">
-        <ul class="ai-bullets">
-          <li><span class="bnum">01</span><span>Analyzing browser screen activity patterns with Vision AI...</span></li>
+    </section>
+
+    <div class="summary-grid-cards">
+      <div class="card violet">
+        <div class="card-label">Focus Areas Breakdown</div>
+        <div id="summaryFocusBreakdown" class="summary-list">
+          <div class="item"><span>💻 Software Development</span> <strong>45%</strong></div>
+          <div class="item"><span>🧠 AI Research & Documentation</span> <strong>30%</strong></div>
+          <div class="item"><span>📹 Team Standups & Syncs</span> <strong>15%</strong></div>
+          <div class="item"><span>🎮 Media & Distractions</span> <strong>10%</strong></div>
+        </div>
+      </div>
+
+      <div class="card cyan">
+        <div class="card-label">Productivity Recommendations</div>
+        <ul class="recommendation-list">
+          <li><strong>Protect Morning Deep Work:</strong> Your highest coding output occurs between 9:00 AM – 11:30 AM.</li>
+          <li><strong>Batch Social Breaks:</strong> Restrict social feeds to 10-minute intervals post-lunch.</li>
+          <li><strong>Zero Meetings After 4 PM:</strong> Keep late afternoons reserved for code reviews & PR merges.</li>
         </ul>
       </div>
     </div>
-  </section>
+  </div>
 
-  <!-- ===== TOOLBAR & FILTERS ===== -->
-  <section class="toolbar">
-    <div class="search-box">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
-      <input type="text" id="searchInput" placeholder="Search domains, apps, or activity descriptions…">
-    </div>
-    <div class="chips" id="chipRow">
-      <div class="chip active" data-cat="all">All Events</div>
-      <div class="chip" data-cat="coding">Coding 💻</div>
-      <div class="chip" data-cat="learning">Learning 🧠</div>
-      <div class="chip" data-cat="meetings">Meetings 📹</div>
-      <div class="chip" data-cat="distractions">Distractions 🎮</div>
-      <div class="chip" data-cat="utility">Utility 🛠️</div>
-    </div>
-  </section>
 
-  <!-- ===== CHRONOLOGICAL TIMELINE FEED ===== -->
-  <section class="feed-card">
-    <div class="feed-title">
-      <h3><span class="liveping"></span> Chronological Activity Feed</h3>
-      <span class="feed-count" id="feedCount">Showing 0 events</span>
-    </div>
-    <div class="timeline" id="timeline"></div>
-    <div class="empty-state" id="emptyState">No activity matches your filters. Try clearing the search or selecting “All Events.”</div>
-  </section>
+  <!-- ================= TAB 3: CATEGORY ANALYTICS VIEW ================= -->
+  <div id="viewAnalytics" class="tab-view hidden">
+    <section class="metrics" style="margin-bottom: 24px;">
+      <div class="card violet">
+        <div class="card-label">Coding & Development</div>
+        <div class="metric-value" id="analyticsCodingCount">0</div>
+        <div class="metric-delta up">Primary Engineering Focus</div>
+      </div>
+      <div class="card cyan">
+        <div class="card-label">Learning & Research</div>
+        <div class="metric-value" id="analyticsLearningCount">0</div>
+        <div class="metric-delta">Technical Documentation & AI</div>
+      </div>
+      <div class="card amber">
+        <div class="card-label">Distractions & Media</div>
+        <div class="metric-value" id="analyticsDistractionsCount">0</div>
+        <div class="metric-delta">Recreational Breaks</div>
+      </div>
+      <div class="card emerald">
+        <div class="card-label">Utility & Collaboration</div>
+        <div class="metric-value" id="analyticsUtilityCount">0</div>
+        <div class="metric-delta up">Slack, Mail & Calendar</div>
+      </div>
+    </section>
+
+    <!-- Top Domains Table -->
+    <section class="feed-card">
+      <div class="feed-title">
+        <h3><span class="liveping"></span> Top Active Domains & Time Distribution</h3>
+        <span class="feed-count" id="topDomainsCount">5 domains tracked</span>
+      </div>
+      <div class="table-container">
+        <table class="analytics-table">
+          <thead>
+            <tr>
+              <th>Domain</th>
+              <th>Category</th>
+              <th>Total Logged Events</th>
+              <th>Productivity Impact</th>
+            </tr>
+          </thead>
+          <tbody id="analyticsDomainsTable">
+            <tr>
+              <td colspan="4" style="text-align:center; padding:20px; color:var(--text-lo);">Loading analytics data...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+
+
+  <!-- ================= TAB 4: PRIVACY & LOGS VIEW ================= -->
+  <div id="viewPrivacy" class="tab-view hidden">
+    <section class="feed-card" style="margin-bottom: 24px;">
+      <div class="feed-title">
+        <h3>🛡️ Privacy & Security Safeguards</h3>
+        <span class="feed-count">Privacy-by-Design Active</span>
+      </div>
+      <div class="privacy-settings-grid">
+        <div class="privacy-card">
+          <h4>🔒 Domain Exclusion Blacklist</h4>
+          <p>The vision agent automatically suspends capture on sensitive domains:</p>
+          <div class="blacklist-tags">
+            <span class="tag">bank</span>
+            <span class="tag">paypal.com</span>
+            <span class="tag">stripe.com</span>
+            <span class="tag">chase.com</span>
+            <span class="tag">1password.com</span>
+            <span class="tag">bitwarden.com</span>
+            <span class="tag">accounts.google.com</span>
+            <span class="tag">login</span>
+            <span class="tag">auth</span>
+          </div>
+        </div>
+
+        <div class="privacy-card">
+          <h4>🧹 Automatic Data Redaction</h4>
+          <p>Sensitive fields are automatically sanitized before database insertion:</p>
+          <ul class="redact-list">
+            <li>✔️ Email addresses replaced with <code>[REDACTED_EMAIL]</code></li>
+            <li>✔️ Credit card numbers replaced with <code>[REDACTED_CARD]</code></li>
+            <li>✔️ API keys & Tokens replaced with <code>[REDACTED_API_KEY]</code></li>
+            <li>✔️ Zero raw screenshot images stored by default</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- Danger Zone Card -->
+    <section class="feed-card" style="border-color: rgba(244, 63, 94, 0.3);">
+      <div class="feed-title">
+        <h3 style="color: var(--rose-accent);">⚠️ Data Wipe & Retention Controls</h3>
+      </div>
+      <p style="font-size: 13.5px; color: var(--text-mid); margin-bottom: 16px;">
+        You have complete control over your logged session history. Click below to permanently erase all activity records stored in local database storage.
+      </p>
+      <button class="btn btn-danger-outline" id="privacyWipeBtn" style="padding: 12px 20px;">
+        <span>🗑️</span> Permanently Wipe All Activity Logs
+      </button>
+    </section>
+  </div>
 
 </main>
 

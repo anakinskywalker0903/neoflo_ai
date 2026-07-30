@@ -1,89 +1,176 @@
 <!DOCTYPE html>
-<html lang="en">
+<html class="dark" lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>VisionPulse AI Agent</title>
-  <link rel="stylesheet" href="popup.css">
-</head>
-<body>
-  <div class="container">
-    <!-- Header -->
-    <header class="header">
-      <div class="logo">
-        <span class="icon">👁️</span>
-        <div>
-          <h1>VisionPulse <span class="badge-ai">AI</span></h1>
-          <p class="subtitle">Visual Agent & Productivity Monitor</p>
-        </div>
-      </div>
-      <div class="status-indicator" id="statusPill">
-        <span class="dot"></span>
-        <span id="statusText">Active</span>
-      </div>
-    </header>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>VisionPulse AI</title>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=JetBrains+Mono:wght@600&display=swap" rel="stylesheet"/>
+  <style>
+    body {
+      background-color: #07090e;
+      width: 360px;
+      margin: 0;
+      padding: 0;
+      overflow-x: hidden;
+      background-image: 
+        radial-gradient(circle at 50% -20%, rgba(139, 92, 246, 0.18), transparent 60%),
+        radial-gradient(circle at -20% 120%, rgba(76, 215, 246, 0.12), transparent 60%);
+      min-height: 520px;
+    }
+    
+    .glass-card {
+      background: rgba(255, 255, 255, 0.03);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-top: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 12px;
+    }
 
-    <!-- Main Control Toggle -->
-    <div class="card toggle-card">
-      <div class="toggle-info">
-        <h3>Screen Monitoring</h3>
-        <p>Captures active tab screenshot & logs AI insights</p>
+    .primary-gradient-bg {
+      background: linear-gradient(135deg, #8b5cf6, #d946ef);
+    }
+
+    .primary-gradient-text {
+      background: linear-gradient(135deg, #8b5cf6, #d946ef);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      color: transparent;
+    }
+
+    .glow-active {
+      box-shadow: 0 0 16px rgba(139, 92, 246, 0.25);
+    }
+
+    .pulse-emerald {
+      animation: pulse-green 2s infinite;
+    }
+
+    @keyframes pulse-green {
+      0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); }
+      70% { box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+    }
+
+    .fade-in-up {
+      animation: fadeInUp 0.4s ease-out forwards;
+      opacity: 0;
+      transform: translateY(8px);
+    }
+
+    @keyframes fadeInUp {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+  </style>
+</head>
+<body class="bg-[#07090e] text-[#e2e2ea] font-sans flex flex-col relative">
+
+  <!-- Top AppBar Header -->
+  <header class="bg-[#0c0e13]/80 backdrop-blur-xl flex items-center justify-between px-4 w-full max-w-[360px] fixed top-0 h-14 border-b border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] z-50">
+    <div class="flex items-center gap-2">
+      <!-- Glowing AI Eye Logo -->
+      <div class="relative w-6 h-6 flex items-center justify-center">
+        <div class="absolute inset-0 rounded-full border border-[#8b5cf6]/50 animate-[spin_4s_linear_infinite]"></div>
+        <div class="absolute w-3 h-3 bg-[#4cd7f6] rounded-full shadow-[0_0_8px_#4cd7f6]"></div>
       </div>
-      <label class="switch">
-        <input type="checkbox" id="trackingToggle" checked>
-        <span class="slider round"></span>
-      </label>
+      <h1 class="text-[18px] font-black tracking-tight primary-gradient-text">VisionPulse AI</h1>
     </div>
+
+    <!-- Live Status Pill -->
+    <div class="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 pulse-emerald" id="statusPill">
+      <div class="w-1.5 h-1.5 rounded-full bg-emerald-400" id="statusDot"></div>
+      <span class="text-[11px] font-mono font-bold text-emerald-400 uppercase tracking-wider" id="statusText">Active</span>
+    </div>
+  </header>
+
+  <!-- Main Body Content -->
+  <main class="flex-1 mt-14 p-4 flex flex-col gap-3 overflow-y-auto">
+
+    <!-- Screen Capture Control Card -->
+    <section class="glass-card p-3.5 flex items-center justify-between transition-all hover:bg-white/[0.05]">
+      <div class="flex flex-col">
+        <span class="text-[14px] font-semibold text-white">Screen Capture</span>
+        <span class="text-[12px] text-gray-400">Continuous visual AI analysis</span>
+      </div>
+      <!-- Switch Toggle -->
+      <label class="flex items-center cursor-pointer relative">
+        <input class="sr-only" id="trackingToggle" type="checkbox" checked />
+        <div class="w-[44px] h-[24px] bg-[#33353b] rounded-full border border-white/10 transition-colors duration-300" id="toggleBg"></div>
+        <div class="absolute left-[2px] top-[2px] w-[20px] h-[20px] bg-white rounded-full transition-transform duration-300 shadow-sm" id="toggleKnob"></div>
+      </label>
+    </section>
 
     <!-- Live Activity Card -->
-    <div class="card activity-card">
-      <div class="card-header">
-        <span class="label">LAST CAPTURED ACTIVITY</span>
-        <span class="time" id="lastTime">Just now</span>
-      </div>
-      <div class="activity-content" id="activityContent">
-        <div class="activity-main">
-          <span class="category-tag category-coding" id="categoryTag">Coding</span>
-          <h4 id="websiteDomain">github.com</h4>
-        </div>
-        <p class="activity-title" id="activityTitle">Editing React component</p>
-        <p class="activity-summary" id="activitySummary">Analyzing source code and reviewing pull requests.</p>
-        <div class="activity-footer">
-          <span>Confidence: <strong id="confidenceScore">98%</strong></span>
-          <span>Score: <strong id="productivityScore">+1 Productive</strong></span>
-        </div>
-      </div>
-    </div>
+    <section class="glass-card p-4 flex flex-col gap-2.5 fade-in-up glow-active relative overflow-hidden">
+      <div class="absolute -right-6 -top-6 w-24 h-24 bg-[#8b5cf6]/15 rounded-full blur-xl pointer-events-none"></div>
 
-    <!-- Capture Settings & Controls -->
-    <div class="card settings-card">
-      <div class="setting-row">
-        <label for="intervalSelect">Capture Frequency</label>
-        <select id="intervalSelect">
-          <option value="15">Every 15 Seconds</option>
-          <option value="30" selected>Every 30 Seconds</option>
-          <option value="60">Every 1 Minute</option>
-          <option value="120">Every 2 Minutes</option>
+      <div class="flex justify-between items-start">
+        <div class="flex flex-col gap-0.5 z-10">
+          <span class="text-[10px] font-mono font-semibold text-gray-400 uppercase tracking-wider">Last Captured Tab</span>
+          <span class="text-[12px] text-white flex items-center gap-1">
+            <span class="material-symbols-outlined text-[14px] text-[#4cd7f6]">link</span>
+            <strong id="websiteDomain" class="truncate max-w-[160px]">github.com</strong>
+          </span>
+        </div>
+        <!-- Category Badge -->
+        <div class="px-2.5 py-0.5 rounded-full bg-[#ae05c6]/20 border border-[#ae05c6]/50 shadow-[0_0_8px_rgba(174,5,198,0.3)] z-10">
+          <span class="text-[10px] font-mono font-bold text-[#fbabff] uppercase" id="categoryTag">Coding</span>
+        </div>
+      </div>
+
+      <div class="flex flex-col gap-1 z-10 mt-0.5">
+        <h3 class="text-[14px] font-bold text-white truncate" id="activityTitle">Refactoring Dashboard.tsx</h3>
+        <p class="text-[12px] text-gray-300 italic border-l-2 border-[#8b5cf6]/50 pl-2.5 ml-0.5 line-clamp-2" id="activitySummary">
+          "User is reviewing component performance and state."
+        </p>
+      </div>
+
+      <!-- Confidence Bar -->
+      <div class="flex items-center gap-2 mt-1 z-10 pt-2.5 border-t border-white/5">
+        <span class="material-symbols-outlined text-[#4cd7f6] text-[16px]">bolt</span>
+        <div class="flex-1 bg-white/10 h-1.5 rounded-full overflow-hidden">
+          <div class="h-full w-[95%] primary-gradient-bg rounded-full relative" id="confidenceBar">
+            <div class="absolute inset-0 bg-white/20 animate-pulse"></div>
+          </div>
+        </div>
+        <span class="text-[10px] font-mono font-bold text-[#4cd7f6]" id="confidenceScore">98% CONF</span>
+      </div>
+    </section>
+
+    <!-- Settings Card -->
+    <section class="glass-card p-3.5 flex flex-col gap-1.5 fade-in-up">
+      <label class="text-[10px] font-mono font-semibold text-gray-400 uppercase tracking-wider" for="intervalSelect">Capture Frequency</label>
+      <div class="relative">
+        <select class="w-full appearance-none bg-white/[0.05] border border-white/10 text-white text-[12px] rounded-xl py-2 px-3 focus:outline-none focus:border-[#4cd7f6] cursor-pointer" id="intervalSelect">
+          <option class="bg-[#191c21] text-white" value="15">15 Seconds (High Energy)</option>
+          <option class="bg-[#191c21] text-white" selected value="30">30 Seconds (Balanced)</option>
+          <option class="bg-[#191c21] text-white" value="60">60 Seconds (Eco Mode)</option>
+          <option class="bg-[#191c21] text-white" value="120">120 Seconds (Battery Saver)</option>
         </select>
+        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2.5 text-gray-400">
+          <span class="material-symbols-outlined text-[18px]">expand_more</span>
+        </div>
       </div>
-    </div>
+    </section>
 
-    <!-- Actions -->
-    <div class="actions-row">
-      <button class="btn btn-primary" id="captureBtn">
-        <span>📸</span> Capture & Analyze Now
+    <!-- Action Buttons -->
+    <section class="flex flex-col gap-2.5 mt-1 fade-in-up">
+      <button class="w-full h-[40px] rounded-xl primary-gradient-bg text-white text-[13px] font-bold flex items-center justify-center gap-2 transition-all hover:shadow-[0_0_20px_rgba(139,92,246,0.4)] active:scale-95 cursor-pointer" id="captureBtn">
+        <span class="material-symbols-outlined text-[18px]">photo_camera</span>
+        <span>Capture & Analyze Now</span>
       </button>
-      <button class="btn btn-secondary" id="dashboardBtn">
-        <span>📊</span> Open Dashboard
-      </button>
-    </div>
 
-    <!-- Footer -->
-    <footer class="footer">
-      <span>Privacy Protected • Local Encryption</span>
-      <a href="#" id="optionsLink">Settings</a>
-    </footer>
-  </div>
+      <button class="w-full h-[40px] rounded-xl bg-transparent border border-[#8b5cf6] text-[#4cd7f6] text-[13px] font-bold flex items-center justify-center gap-2 transition-all hover:bg-[#8b5cf6]/10 active:scale-95 cursor-pointer" id="dashboardBtn">
+        <span class="material-symbols-outlined text-[18px]">monitoring</span>
+        <span>Open Dashboard</span>
+      </button>
+    </section>
+  </main>
 
   <script src="popup.js"></script>
 </body>

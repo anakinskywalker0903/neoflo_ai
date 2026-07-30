@@ -1,44 +1,45 @@
 document.addEventListener('DOMContentLoaded', async () => {
   const trackingToggle = document.getElementById('trackingToggle');
+  const toggleBg = document.getElementById('toggleBg');
+  const toggleKnob = document.getElementById('toggleKnob');
   const statusPill = document.getElementById('statusPill');
+  const statusDot = document.getElementById('statusDot');
   const statusText = document.getElementById('statusText');
   const intervalSelect = document.getElementById('intervalSelect');
   const captureBtn = document.getElementById('captureBtn');
   const dashboardBtn = document.getElementById('dashboardBtn');
-  const optionsLink = document.getElementById('optionsLink');
 
-  // Load current settings & status
+  // Load status
   chrome.runtime.sendMessage({ type: 'GET_STATUS' }, (data) => {
     if (!data) return;
 
-    // Toggle status
     const isActive = data.isTrackingActive !== false;
     trackingToggle.checked = isActive;
+    updateToggleUI(isActive);
     updateStatusPill(isActive);
 
-    // Interval
     if (data.captureInterval) {
       intervalSelect.value = String(data.captureInterval);
     }
 
-    // Last activity render
     if (data.lastActivity) {
-      renderLastActivity(data.lastActivity, data.lastCaptureTime);
+      renderLastActivity(data.lastActivity);
     }
   });
 
-  // Toggle tracking listener
+  // Toggle listener
   trackingToggle.addEventListener('change', (e) => {
-    const isTrackingActive = e.target.checked;
-    updateStatusPill(isTrackingActive);
+    const isActive = e.target.checked;
+    updateToggleUI(isActive);
+    updateStatusPill(isActive);
 
     chrome.runtime.sendMessage({
       type: 'UPDATE_SETTINGS',
-      settings: { isTrackingActive }
+      settings: { isTrackingActive: isActive }
     });
   });
 
-  // Change interval listener
+  // Interval listener
   intervalSelect.addEventListener('change', (e) => {
     const captureInterval = Number(e.target.value);
     chrome.runtime.sendMessage({
@@ -47,24 +48,30 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
   });
 
-  // Capture Now Button
+  // Capture Button listener
   captureBtn.addEventListener('click', () => {
     captureBtn.disabled = true;
-    captureBtn.innerHTML = '<span>⚡</span> Analyzing Screen...';
+    captureBtn.innerHTML = `
+      <span class="material-symbols-outlined animate-spin text-[18px]">sync</span>
+      <span>Analyzing Screen...</span>
+    `;
 
     chrome.runtime.sendMessage({ type: 'TRIGGER_CAPTURE' }, (response) => {
       captureBtn.disabled = false;
-      captureBtn.innerHTML = '<span>📸</span> Capture & Analyze Now';
+      captureBtn.innerHTML = `
+        <span class="material-symbols-outlined text-[18px]">photo_camera</span>
+        <span>Capture & Analyze Now</span>
+      `;
 
       if (response && response.success && response.activity) {
-        renderLastActivity(response.activity, new Date().toISOString());
+        renderLastActivity(response.activity);
       } else if (response && response.reason) {
-        alert(`Capture Note: ${response.reason}`);
+        alert(`Note: ${response.reason}`);
       }
     });
   });
 
-  // Open Dashboard
+  // Dashboard Button listener
   dashboardBtn.addEventListener('click', () => {
     chrome.storage.local.get(['backendUrl'], (settings) => {
       const url = settings.backendUrl || 'http://localhost:5000';
@@ -72,52 +79,50 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
   });
 
-  // Open Options
-  optionsLink.addEventListener('click', (e) => {
-    e.preventDefault();
-    chrome.runtime.openOptionsPage();
-  });
-
-  function updateStatusPill(isActive) {
+  function updateToggleUI(isActive) {
     if (isActive) {
-      statusPill.classList.remove('paused');
-      statusText.textContent = 'Active';
+      toggleBg.classList.add('primary-gradient-bg');
+      toggleBg.classList.remove('bg-[#33353b]');
+      toggleKnob.style.transform = 'translateX(20px)';
     } else {
-      statusPill.classList.add('paused');
-      statusText.textContent = 'Paused';
+      toggleBg.classList.remove('primary-gradient-bg');
+      toggleBg.classList.add('bg-[#33353b]');
+      toggleKnob.style.transform = 'translateX(0px)';
     }
   }
 
-  function renderLastActivity(activity, captureTime) {
+  function updateStatusPill(isActive) {
+    if (isActive) {
+      statusPill.className = 'flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 pulse-emerald';
+      statusDot.className = 'w-1.5 h-1.5 rounded-full bg-emerald-400';
+      statusText.textContent = 'Active';
+      statusText.className = 'text-[11px] font-mono font-bold text-emerald-400 uppercase tracking-wider';
+    } else {
+      statusPill.className = 'flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-amber-500/10 border border-amber-500/30';
+      statusDot.className = 'w-1.5 h-1.5 rounded-full bg-amber-400';
+      statusText.textContent = 'Paused';
+      statusText.className = 'text-[11px] font-mono font-bold text-amber-400 uppercase tracking-wider';
+    }
+  }
+
+  function renderLastActivity(activity) {
     const websiteDomain = document.getElementById('websiteDomain');
+    const categoryTag = document.getElementById('categoryTag');
     const activityTitle = document.getElementById('activityTitle');
     const activitySummary = document.getElementById('activitySummary');
-    const categoryTag = document.getElementById('categoryTag');
+    const confidenceBar = document.getElementById('confidenceBar');
     const confidenceScore = document.getElementById('confidenceScore');
-    const productivityScore = document.getElementById('productivityScore');
-    const lastTime = document.getElementById('lastTime');
 
     if (websiteDomain) websiteDomain.textContent = activity.domain || activity.website || 'browser';
     if (activityTitle) activityTitle.textContent = activity.activity || 'Active Tab';
-    if (activitySummary) activitySummary.textContent = activity.summary || 'Processing screen content...';
-    
+    if (activitySummary) activitySummary.textContent = `"${activity.summary || 'Analyzing screen content...'}"`;
+
     if (categoryTag) {
       categoryTag.textContent = activity.category || 'Other';
-      categoryTag.className = `category-tag category-${(activity.category || 'other').toLowerCase()}`;
     }
 
-    if (confidenceScore) {
-      confidenceScore.textContent = `${Math.round((activity.confidence || 0.95) * 100)}%`;
-    }
-
-    if (productivityScore) {
-      const score = activity.productivity_score ?? 0;
-      productivityScore.textContent = score > 0 ? '+1 Productive' : score < 0 ? '-1 Distraction' : '0 Neutral';
-    }
-
-    if (lastTime && captureTime) {
-      const date = new Date(captureTime);
-      lastTime.textContent = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-    }
+    const confPct = Math.round((activity.confidence || 0.95) * 100);
+    if (confidenceBar) confidenceBar.style.width = `${confPct}%`;
+    if (confidenceScore) confidenceScore.textContent = `${confPct}% CONF`;
   }
 });

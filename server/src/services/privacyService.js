@@ -31,7 +31,7 @@ export function sanitizeText(text = '') {
   return text
     .replace(/\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b/g, '[REDACTED_EMAIL]')
     .replace(/\b\d{4}[- ]?\d{4}[- ]?\d{4}[- ]?\d{4}\b/g, '[REDACTED_CARD]')
-    .replace(/\b(sk_[live|test]_[0-9a-zA-Z]{24,})\b/g, '[REDACTED_API_KEY]')
+    .replace(/\bsk_(?:live|test)_[0-9a-zA-Z]{20,}\b/g, '[REDACTED_API_KEY]')
     .replace(/bearer\s+[A-Za-z0-9\-\._~\+\/]+=*/gi, 'Bearer [REDACTED_TOKEN]');
 }
 
